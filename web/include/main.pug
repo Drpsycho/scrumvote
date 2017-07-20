@@ -1,0 +1,16 @@
+div.container
+	div.col-xs-12
+		div.page-header
+			h2#result Res:
+			h3#users Users(t:gh):
+			h3#minmax Min,max:
+
+	div.col-xs-12
+		div.btn-group
+			each val in [1, 2, 3, 5, 8, 11, 13, 21, 99]
+				div.btn-div
+					button(type='button').btn.btn-default.btn-sq#vote_btn= val
+	div.col-xs-12.vert
+		input(type="checkbox" data-toggle="toggle" data-on="Teamate" data-width="240" data-off="Ghost" data-onstyle="success" data-offstyle="warning")#toggle-event
+	div.col-xs-12.vert
+		button(type='button').btn.btn-default#reset-btn Reset

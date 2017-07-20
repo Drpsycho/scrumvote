@@ -1,0 +1,41 @@
+.col-xs-12{
+	display: flex;
+	justify-content: center;
+	align-content: center;
+	align-items: center;
+}
+
+.btn-group{
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: center;
+	align-content: center;
+	align-items: center;
+	max-width: 300px;
+}
+
+.btn-div{
+	display: flex;
+	/*flex-flow: column wrap;*/
+	/*justify-content: space-between;*/
+}
+
+.btn-sq {
+  width: 80px !important;
+  height: 80px !important;
+  padding: 5px;
+}
+
+.vert{
+	padding-top: 10px;
+}
+
+h1{
+	text-align: center;
+}
+#reset-btn{
+	width: 240px;
+}
+.toggle{
+	width: 240px;
+}
