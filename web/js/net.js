@@ -46,14 +46,13 @@ var msgparser = function(event) {
 };
 
 var wsopen = function() {
-        console.log("Соединение установлено.");
+        console.log("WS connected.");
 };
 
 var sendtoserver;
 var socket;
   
 var InitWS = function() {
-    // socket = new WebSocket("ws://kharisov.me:9001/handler");
     socket = new WebSocket("ws://127.0.0.1:9001/handler");
     socket.onopen = wsopen; 
     socket.onmessage = msgparser;
@@ -67,11 +66,11 @@ var InitWS = function() {
 
     socket.onclose = function(event) {
         if (event.wasClean) {
-           	console.log('Соединение закрыто чисто');
+           	console.log('WS closed');
         } else {
-            console.log('Обрыв соединения'); // например, "убит" процесс сервера
+            console.log('WS closed with problem');
         }
-        console.log('Код: ' + event.code + ' причина: ' + event.reason);
+        console.log('Error code: ' + event.code + ' The reason: ' + event.reason);
     };
     
     socket.onopen = function () {
