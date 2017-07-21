@@ -55,10 +55,9 @@ type connection struct {
 func serverWs(rw http.ResponseWriter, req *http.Request) {
 	ws, err := upgrader.Upgrade(rw, req, nil)
 	if err != nil {
-		log.Print("upgrade:", err)
+		log.Print("upgrade smt went wron!:", err)
 		return
 	}
-	log.Println("websocket working")
 	defer ws.Close()
 
 	c := &connection{ws: ws, send: make(chan []byte, 256)}
@@ -126,22 +125,7 @@ func (c *connection) readPump() {
 		}
 
 		switch dat.Cmd {
-		case "reg":
-			log.Println("reg")
-			c.userinfo.User = dat.User
-			var users []user
-			for it := range HubHandler.connections {
-				users = append(users, it.userinfo.User)
-			}
-
-			res, _ := json.Marshal(
-				outwsmsg{
-					Cmd:   "update",
-					Users: users})
-
-			HubHandler.broadcast <- res
-
-		case "update":
+		case "reg", "update":
 			c.userinfo.User = dat.User
 			var users []user
 			for it := range HubHandler.connections {
@@ -168,13 +152,11 @@ func (c *connection) readPump() {
 			HubHandler.broadcast <- res
 
 		case "reset":
-			log.Println("reset all value")
 			var users []user
 			for it := range HubHandler.connections {
 				it.userinfo.User.Value = 0
 				users = append(users, it.userinfo.User)
 			}
-			log.Println("users - ", users)
 			res, _ := json.Marshal(outwsmsg{
 				Cmd:   "update",
 				Users: users})
