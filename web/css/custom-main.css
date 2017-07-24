@@ -30,7 +30,15 @@
 	padding-top: 10px;
 }
 
-h1{
+.header_vert{
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: center;
+	align-content: center;
+	align-items: center;
+}
+
+h3{
 	text-align: center;
 }
 #reset-btn{
@@ -38,4 +46,12 @@ h1{
 }
 .toggle{
 	width: 240px;
+}
+button#vote_btn:active
+{
+    background:#5cb85c;
+}
+button#vote_btn:focus
+{
+    background:#5cb85c;
 }

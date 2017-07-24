@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 )
 
 // hub maintains the set of active connections and broadcasts messages to the
@@ -39,7 +38,7 @@ func (h *hub) run() {
 				delete(h.connections, c)
 				close(c.send)
 			}
-			log.Println("unreg some user and make broadcast")
+
 			var users []user
 			for it := range h.connections {
 				users = append(users, it.userinfo.User)

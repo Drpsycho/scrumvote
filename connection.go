@@ -23,10 +23,11 @@ const (
 )
 
 type user struct {
-	Id    string `json:"Id"`
-	Name  string `json:"Name"`
-	Value int    `json:"Value"`
-	Ghost bool   `json:"Ghost"`
+	Id          string `json:"Id"`
+	Name        string `json:"Name"`
+	Value       int    `json:"Value"`
+	Ghost       bool   `json:"Ghost"`
+	ScrumMaster bool   `json:"ScrumMaster"`
 }
 type regmsg struct {
 	Cmd  string `json:"Cmd"`
@@ -63,6 +64,7 @@ func serverWs(rw http.ResponseWriter, req *http.Request) {
 	c := &connection{ws: ws, send: make(chan []byte, 256)}
 	c.userinfo.User.Id = RandId()
 	c.userinfo.User.Ghost = true
+	c.userinfo.User.ScrumMaster = false
 
 	HubHandler.register <- c
 	go c.writePump()
@@ -125,32 +127,28 @@ func (c *connection) readPump() {
 		}
 
 		switch dat.Cmd {
-		case "reg", "update":
-			c.userinfo.User = dat.User
-			var users []user
-			for it := range HubHandler.connections {
-				users = append(users, it.userinfo.User)
+		case "reg":
+			{
+				res, _ := json.Marshal(regmsg{
+					Cmd:  "setid",
+					User: c.userinfo.User})
+				c.write(websocket.TextMessage, res)
 			}
 
-			res, _ := json.Marshal(outwsmsg{
-				Cmd:   "update",
-				Users: users})
+			HubHandler.broadcast <- getAllUsers()
 
-			HubHandler.broadcast <- res
+		case "update":
+			c.userinfo.User.Ghost = dat.User.Ghost
+			c.userinfo.User.Name = dat.User.Name
+			c.userinfo.User.Value = dat.User.Value
+			HubHandler.broadcast <- getAllUsers()
 
 		case "chage_state":
 			c.userinfo.User.Ghost = dat.User.Ghost
-			var users []user
-			for it := range HubHandler.connections {
-				users = append(users, it.userinfo.User)
-			}
-
-			res, _ := json.Marshal(outwsmsg{
-				Cmd:   "update",
-				Users: users})
-
-			HubHandler.broadcast <- res
-
+			HubHandler.broadcast <- getAllUsers()
+		case "im_scrum_master":
+			c.userinfo.User.ScrumMaster = true
+			HubHandler.broadcast <- getAllUsers()
 		case "reset":
 			var users []user
 			for it := range HubHandler.connections {
@@ -163,4 +161,16 @@ func (c *connection) readPump() {
 			HubHandler.broadcast <- res
 		}
 	}
+}
+
+func getAllUsers() []byte {
+	var users []user
+	for it := range HubHandler.connections {
+		users = append(users, it.userinfo.User)
+	}
+
+	res, _ := json.Marshal(outwsmsg{
+		Cmd:   "update",
+		Users: users})
+	return res
 }
