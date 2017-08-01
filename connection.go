@@ -160,6 +160,18 @@ func (c *connection) readPump() {
 				Users: users})
 			HubHandler.broadcast <- res
 		}
+        case "hard_reset":
+			var users []user
+			for it := range HubHandler.connections {
+				it.userinfo.User.Value = 0
+                it.userinfo.User.Ghost = true
+				users = append(users, it.userinfo.User)
+			}
+			res, _ := json.Marshal(outwsmsg{
+				Cmd:   "update",
+				Users: users})
+			HubHandler.broadcast <- res
+		}
 	}
 }
 

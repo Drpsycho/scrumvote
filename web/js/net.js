@@ -1,11 +1,11 @@
 var myid = "0"; //TODO
 var MeIsScrumMaster = false;
+var mean = 0;
 
 var msgparser = function(event) {
 
     var msg = JSON.parse(event.data);
     if (msg.Cmd === "update") {
-        var mean = 0;
         var min = 99;
         var max = 0;
         var teamate = 0;
@@ -15,7 +15,11 @@ var msgparser = function(event) {
             if (!MeIsScrumMaster && msg.Users[it].ScrumMaster) {
                 if (msg.Users[it].Id === myid) {
                     MeIsScrumMaster = true;
-                    document.querySelector('#reset-btn').innerText = "Reset";
+                    if (mean === 0){
+                        document.querySelector('#reset-btn').innerText = "Hard reset";
+                    } else {
+                        document.querySelector('#reset-btn').innerText = "Reset";
+                    }
                 } 
                 ScrumMasterExist = true;
             }
@@ -125,9 +129,15 @@ $(window).ready(function() {
         var u = 0;
         var response_;
         if (this.innerText === "Reset") {
-            response_ = {
-                'Cmd': "reset"
-            };
+            if (mean === 0){
+                response_ = {
+                    'Cmd': "hard_reset"
+                };
+            } else {
+                response_ = {
+                    'Cmd': "reset"
+                };
+            }
         } else {
             response_ = {
                 'Cmd': "im_scrum_master"
