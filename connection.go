@@ -159,7 +159,6 @@ func (c *connection) readPump() {
 				Cmd:   "update",
 				Users: users})
 			HubHandler.broadcast <- res
-		}
         case "hard_reset":
 			var users []user
 			for it := range HubHandler.connections {

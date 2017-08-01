@@ -9,17 +9,15 @@ var msgparser = function(event) {
         var min = 99;
         var max = 0;
         var teamate = 0;
+        var _sum = 0;
         var already_voted = 0;
         var ScrumMasterExist = false;
+        var change_text_for_reset = false;
         for (var it = 0; it < msg.Users.length; it++) {
             if (!MeIsScrumMaster && msg.Users[it].ScrumMaster) {
                 if (msg.Users[it].Id === myid) {
                     MeIsScrumMaster = true;
-                    if (mean === 0){
-                        document.querySelector('#reset-btn').innerText = "Hard reset";
-                    } else {
-                        document.querySelector('#reset-btn').innerText = "Reset";
-                    }
+                    change_text_for_reset = true;
                 } 
                 ScrumMasterExist = true;
             }
@@ -28,7 +26,7 @@ var msgparser = function(event) {
                 var Value = msg.Users[it].Value;
                 min = Math.min(min, Value);
                 max = Math.max(max, Value);
-                mean += Value;
+                _sum += Value;
 
                 teamate++;
                 if (Value != 0) {
@@ -43,10 +41,18 @@ var msgparser = function(event) {
         	document.querySelector('#reset-btn').removeAttribute('disabled');
         }
 
-        if (teamate === 0) {
-            mean = 0
+        if (teamate === 0 || already_voted === 0) {
+            mean = 0;
         } else {
-            mean /= already_voted === 0 ? 1 : already_voted;
+            mean = _sum / already_voted;
+        }
+
+        if ( change_text_for_reset === true || document.querySelector('#reset-btn').innerText === "Reset" || document.querySelector('#reset-btn').innerText === "Hard reset" ){
+            if ( mean === 0){
+                document.querySelector('#reset-btn').innerText = "Hard reset";
+            } else {
+                document.querySelector('#reset-btn').innerText = "Reset";
+            }
         }
 
         if (already_voted === teamate) {
@@ -128,7 +134,7 @@ $(window).ready(function() {
     document.querySelector('#reset-btn').addEventListener("click", function() {
         var u = 0;
         var response_;
-        if (this.innerText === "Reset") {
+        if (this.innerText === "Reset" || this.innerText === "Hard reset") {
             if (mean === 0){
                 response_ = {
                     'Cmd': "hard_reset"
