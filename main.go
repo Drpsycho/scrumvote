@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+    "time"
 )
 
 var addr = flag.String("addr", "localhost:9001", "http service address")
@@ -34,7 +35,12 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 func main() {
 	flag.Parse()
 	go HubHandler.run()
-
+    go func(){
+            for{
+                time.Sleep(time.Second * 2)
+                HubHandler.broadcast <- GetAllUsers()
+            }
+        }()
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/handler", serverWs)
 	log.Fatal(http.ListenAndServe(*addr, nil))

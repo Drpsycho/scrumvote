@@ -135,20 +135,20 @@ func (c *connection) readPump() {
 				c.write(websocket.TextMessage, res)
 			}
 
-			HubHandler.broadcast <- getAllUsers()
+			HubHandler.broadcast <- GetAllUsers()
 
 		case "update":
 			c.userinfo.User.Ghost = dat.User.Ghost
 			c.userinfo.User.Name = dat.User.Name
 			c.userinfo.User.Value = dat.User.Value
-			HubHandler.broadcast <- getAllUsers()
+			HubHandler.broadcast <- GetAllUsers()
 
 		case "chage_state":
 			c.userinfo.User.Ghost = dat.User.Ghost
-			HubHandler.broadcast <- getAllUsers()
+			HubHandler.broadcast <- GetAllUsers()
 		case "im_scrum_master":
 			c.userinfo.User.ScrumMaster = true
-			HubHandler.broadcast <- getAllUsers()
+			HubHandler.broadcast <- GetAllUsers()
 		case "reset":
 			var users []user
 			for it := range HubHandler.connections {
@@ -174,7 +174,7 @@ func (c *connection) readPump() {
 	}
 }
 
-func getAllUsers() []byte {
+func GetAllUsers() []byte {
 	var users []user
 	for it := range HubHandler.connections {
 		users = append(users, it.userinfo.User)
